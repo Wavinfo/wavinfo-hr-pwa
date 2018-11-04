@@ -1,0 +1,27 @@
+.block-footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  height: $footer-height;
+  background-color: map-get($grey, lighten-4);
+  display: flex;
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    height: 100%;
+    font-size: 1.33rem;
+    border-radius: 0;
+  }
+
+  .progress {
+    position: absolute;
+    z-index: 2;
+    margin: 0;
+    bottom: 0;
+  }
+}

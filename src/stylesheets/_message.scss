@@ -1,0 +1,49 @@
+.message {
+  display: flex;
+  align-items: center;
+  margin: 1rem 0;
+  font-size: 1rem;
+
+  .message-avatar {
+    border-radius: 50%;
+    margin-right: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    width: 45px;
+    min-width: 45px;
+
+    // Settings below is only for wavinfo avatar now
+    background-color: #636262;
+  }
+
+  .message-avatar-img {
+    padding: 10px;
+    width: 100%;
+    height: 100%;
+  }
+
+  .message-content {
+    padding: 0.5rem 0.75rem;
+    margin: 0;
+    flex: 0 1 auto;
+    border-radius: 15px;
+  }
+
+  &.message-left {
+    justify-content: flex-start;
+
+    .message-content {
+      background-color: map-get($grey, lighten-4);
+    }
+  }
+
+  &.message-right {
+    justify-content: flex-end;
+
+    .message-content {
+      background-color: map-get($cyan, lighten-2);
+    }
+  }
+}

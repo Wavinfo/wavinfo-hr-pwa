@@ -1,0 +1,30 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto');
+
+@import '_variables.scss';
+
+// These components are necessary for materialize
+@import 'materialize-css/sass/components/_color-variables.scss';
+@import 'materialize-css/sass/components/_color-classes.scss';
+@import 'materialize-css/sass/components/_variables.scss';
+@import 'materialize-css/sass/components/_normalize.scss';
+@import 'materialize-css/sass/components/_global.scss';
+
+// Import materialize components used in page
+@import 'materialize-css/sass/components/_waves.scss';
+@import 'materialize-css/sass/components/_navbar.scss';
+@import 'materialize-css/sass/components/_cards.scss';
+@import 'materialize-css/sass/components/_buttons.scss';
+@import 'materialize-css/sass/components/forms/_forms.scss';
+
+// Customize stylesheets for global
+@import './_icons.scss';
+@import './_message.scss';
+@import './_utilities.scss';
+@import './_form.scss';
+
+// Customize stylesheets for components
+@import './components/_App.scss';
+@import './components/_Navbar.scss';
+@import './components/_Main.scss';
+@import './components/_Footer.scss';
+@import './components/_Setting.scss';
