@@ -3,12 +3,14 @@ import io from 'socket.io-client';
 import Navbar from './Navbar';
 import Main from './Main';
 import Footer from './Footer';
+import SaveToHomeScreen from './SaveToHomeScreen';
 import Setting from '../pages/Setting';
 import Messages from '../pages/Messages';
 import { encrypt, decrypt, socketStatus } from '../utilities/helpers';
 import { socketConfig } from '../utilities/constants';
 
 let socket = null;
+let deferredPrompt;
 
 class App extends Component {
   constructor(props) {
@@ -25,9 +27,11 @@ class App extends Component {
     this.onLinkTo = this.onLinkTo.bind(this);
     this.onSaveAccount = this.onSaveAccount.bind(this);
     this.onOpenSocket = this.onOpenSocket.bind(this);
+    this.onSaveAppToHomeScreen = this.onSaveAppToHomeScreen.bind(this);
   }
 
   componentDidMount() {
+    this.savePWAInstallPrompt();
     this.initApp();
   }
 
@@ -212,6 +216,44 @@ class App extends Component {
     });
   }
 
+  savePWAInstallPrompt() {
+    window.addEventListener('beforeinstallprompt', function(e) {
+      console.log('beforeinstallprompt Event fired');
+      e.preventDefault();
+
+      // Stash the event so it can be triggered later.
+      deferredPrompt = e;
+
+      return false;
+    });
+  }
+
+  onSaveAppToHomeScreen() {
+    if (deferredPrompt !== undefined) {
+      // The user has had a positive interaction with our app and Chrome
+      // has tried to prompt previously, so let's show the prompt.
+      deferredPrompt.prompt();
+
+      // 看看使用者針對這個 prompt 做了什麼回應
+      deferredPrompt.userChoice.then(function(choiceResult) {
+        console.log(choiceResult.outcome);
+
+        if (choiceResult.outcome === 'dismissed') {
+          console.log('User cancelled home screen install');
+        } else {
+          console.log('User added to home screen');
+        }
+
+        // We no longer need the prompt.  Clear it up.
+        deferredPrompt = null;
+      });
+    }
+  }
+
+  get isInstallPromptSaved() {
+    return deferredPrompt;
+  }
+
   render() {
     const { currentPath, username, password, socketStatusCode } = this.state;
 
@@ -232,6 +274,11 @@ class App extends Component {
           socketStatusCode={socketStatusCode}
           onOpenSocket={this.onOpenSocket}
         />
+        {this.isInstallPromptSaved && (
+          <SaveToHomeScreen
+            onSaveAppToHomeScreen={this.onSaveAppToHomeScreen}
+          />
+        )}
       </div>
     );
   }

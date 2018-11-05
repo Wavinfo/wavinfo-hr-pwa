@@ -6,7 +6,7 @@ const Navbar = ({ onLinkTo, currentPath }) => {
       <nav>
         <a
           href="#"
-          className="d-flex align-items-center left h-100"
+          className="align-items-center left h-100"
           style={{
             marginLeft: '1rem',
             display: currentPath === 'messages' ? 'none' : 'flex'
@@ -25,7 +25,7 @@ const Navbar = ({ onLinkTo, currentPath }) => {
           rel="noopener noreferrer"
           href="https://femascloud.com/wavinfo/accounts/login"
         >
-          Wavinfo
+          Wavbo
         </a>
 
         <a

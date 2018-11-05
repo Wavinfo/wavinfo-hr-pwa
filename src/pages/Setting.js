@@ -17,6 +17,7 @@ class Setting extends React.Component {
       password: this.passwordRef.current.value
     });
   }
+
   render() {
     const { username, password } = this.props;
     return (
