@@ -95,7 +95,7 @@ class App extends Component {
 
     socket.on('reconnecting', reconnectTimes => {
       this.addMessage({
-        text: `微寶第 ${reconnectTimes} 次嘗試與伺服器連線...`
+        text: `微寶第 ${reconnectTimes + 1} 次嘗試與伺服器連線...`
       });
 
       if (reconnectTimes >= socketConfig.reconnectAttemptTimes) {
@@ -261,7 +261,11 @@ class App extends Component {
       <div className="App">
         <Navbar onLinkTo={this.onLinkTo} currentPath={currentPath} />
         <Main currentPath={currentPath}>
-          <Messages key="messages" messages={this.state.messages} />
+          <Messages
+            key="messages"
+            messages={this.state.messages}
+            socketStatusCode={socketStatusCode}
+          />
           <Setting
             key="setting"
             username={username}

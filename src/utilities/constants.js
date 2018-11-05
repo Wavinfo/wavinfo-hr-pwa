@@ -1,6 +1,6 @@
 const socketConfig = {
   url: 'http://192.168.1.4:9000/',
-  reconnectAttemptTimes: 3
+  reconnectAttemptTimes: 2
 };
 
 const secretKey = 'wavbo';
