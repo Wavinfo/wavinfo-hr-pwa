@@ -1,4 +1,7 @@
 import React from 'react';
+import Bulletin from './Bulletin';
+
+let isOverflow;
 
 class Main extends React.Component {
   constructor(props) {
@@ -13,8 +16,10 @@ class Main extends React.Component {
   componentDidUpdate() {
     // Messages Component 的捲軸會移到最後一則訊息，
     // 其他的 Component 都是捲軸都是移到最頂端
-    const isOverflow =
+
+    isOverflow =
       this.messagesElement.offsetHeight > this.mainElementInnerHeight;
+
     if (this.props.currentPath === 'messages' && isOverflow) {
       this.scrollToLastMessageElement();
     } else {
@@ -67,7 +72,7 @@ class Main extends React.Component {
     return (
       <main className="block-main" data-target="main">
         <div
-          className="container"
+          className="container h-100"
           style={{
             transform: `translate(-${this.navigateToCurrentPath(currentPath) *
               100}%)`
@@ -75,6 +80,7 @@ class Main extends React.Component {
         >
           {children}
         </div>
+        {!isOverflow && <Bulletin />}
       </main>
     );
   }

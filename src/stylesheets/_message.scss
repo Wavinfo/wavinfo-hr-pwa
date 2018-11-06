@@ -29,6 +29,7 @@
     margin: 0;
     flex: 0 1 auto;
     border-radius: 15px;
+    position: relative;
   }
 
   &.message-left {
@@ -36,6 +37,19 @@
 
     .message-content {
       background-color: map-get($grey, lighten-4);
+
+      &:after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 0;
+        height: 0;
+        border-top: 15px solid map-get($grey, lighten-4);
+        // change arrow position below if needed
+        border-left: 15px solid transparent;
+        left: -10px;
+      }
     }
   }
 
@@ -43,7 +57,20 @@
     justify-content: flex-end;
 
     .message-content {
-      background-color: map-get($cyan, lighten-2);
+      background-color: $secondary-color;
+
+      &:after {
+        content: '';
+        position: absolute;
+        top: 10px;
+        width: 0;
+        height: 0;
+        border-top: 15px solid $secondary-color;
+
+        // change arrow position below if needed
+        border-right: 15px solid transparent;
+        right: -10px;
+      }
     }
   }
 
@@ -88,6 +115,30 @@
         transform: translateY(0);
         background-color: #b6b5ba;
       }
+    }
+  }
+
+  &.message-bulletin {
+    position: fixed;
+    z-index: 0;
+    bottom: 60px;
+    left: 10px;
+    border-radius: 15px;
+    width: 55%;
+    background-color: $secondary-color;
+
+    &:after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 0;
+      height: 0;
+      border-top: 15px solid $secondary-color;
+
+      // change arrow position below if needed
+      border-right: 15px solid transparent;
+      right: -10px;
     }
   }
 }

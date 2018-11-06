@@ -10,6 +10,8 @@ const decrypt = cipherText => {
   return bytes.toString(CryptoJS.enc.Utf8); // origin text
 };
 
+const sample = arr => arr[Math.floor(Math.random() * arr.length)];
+
 class socketStatusConstructor {
   constructor() {
     Object.entries(socketStatusCode).forEach(([status, code]) => {
@@ -30,4 +32,4 @@ class socketStatusConstructor {
 
 const socketStatus = new socketStatusConstructor();
 
-export { encrypt, decrypt, socketStatus };
+export { encrypt, decrypt, socketStatus, sample };

@@ -47,7 +47,7 @@ const Footer = ({ onEmitPunch, socketStatusCode, onOpenSocket }) => {
         }}
       >
         上班打卡
-        <i className="icon icon-briefcase" style={{ marginLeft: 10 }} />
+        <i className="icon icon-briefcase" style={{ marginLeft: 5 }} />
       </button>
       <button
         className={`btn waves-effect waves-light ${getPunchButtonStyle(
