@@ -38,7 +38,7 @@ const Message = ({ speaker, text }) => {
 };
 
 const Messages = ({ messages, socketStatusCode }) => (
-  <div className="col" data-target="messages">
+  <div className="col messages" data-target="messages">
     {messages.map(message => (
       <Message key={message.id} {...message} />
     ))}
