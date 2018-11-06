@@ -127,6 +127,10 @@
     width: 55%;
     background-color: $secondary-color;
 
+    @media (max-width: 330px) {
+      width: 45%;
+    }
+
     &:after {
       content: '';
       position: absolute;
