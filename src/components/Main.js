@@ -38,13 +38,11 @@ class Main extends React.Component {
       .then(response => response.json())
       .then(data => {
         this.setState({
-          bulletinMessages: JSON.parse(data.files['bulletin.json'].content).bulletinMessages
+          bulletinMessages: JSON.parse(data.files['messages.json'].content).bulletinMessages
         })
       })
       .catch(error => {
-        this.addMessage({
-          text: `取得資料時發生錯誤（${error}）`
-        })
+        console.log(`取得資料時發生錯誤（${error}）`)
       })
   }
 

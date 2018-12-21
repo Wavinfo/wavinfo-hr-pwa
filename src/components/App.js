@@ -3,6 +3,7 @@ import io from 'socket.io-client';
 import Navbar from './Navbar';
 import Main from './Main';
 import Footer from './Footer';
+import WhatToEat from './WhatToEat';
 import SaveToHomeScreen from './SaveToHomeScreen';
 import Setting from '../pages/Setting';
 import Messages from '../pages/Messages';
@@ -27,7 +28,8 @@ class App extends Component {
     this.onLinkTo = this.onLinkTo.bind(this);
     this.onSaveAccount = this.onSaveAccount.bind(this);
     this.onOpenSocket = this.onOpenSocket.bind(this);
-    this.onSaveAppToHomeScreen = this.onSaveAppToHomeScreen.bind(this);
+    this.addMessage = this.addMessage.bind(this);
+    // this.onSaveAppToHomeScreen = this.onSaveAppToHomeScreen.bind(this);
   }
 
   componentDidMount() {
@@ -278,11 +280,18 @@ class App extends Component {
           socketStatusCode={socketStatusCode}
           onOpenSocket={this.onOpenSocket}
         />
-        {this.isInstallPromptSaved && (
+        {
+          <WhatToEat addMessage={this.addMessage}/>
+        }
+
+        {
+          // Only Works on Service Worker
+          /* {this.isInstallPromptSaved && (
           <SaveToHomeScreen
             onSaveAppToHomeScreen={this.onSaveAppToHomeScreen}
           />
-        )}
+          )} */
+        }
       </div>
     );
   }
