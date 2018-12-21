@@ -1,16 +1,22 @@
 import React from 'react';
 import Bulletin from './Bulletin';
+import { sample } from './../utilities/helpers';
 
 let isOverflow;
 
 class Main extends React.Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      bulletinMessages: []
+    }
   }
 
   componentDidMount() {
     this.mainElement = document.querySelector('[data-target="main"]');
     this.messagesElement = document.querySelector('[data-target="messages"]');
+    this.fetchBulletinMessages();
   }
 
   componentDidUpdate() {
@@ -25,6 +31,21 @@ class Main extends React.Component {
     } else {
       this.mainElement.scroll(0, 0);
     }
+  }
+
+  fetchBulletinMessages() {
+    return fetch('https://api.github.com/gists/ef19b4c3586c4aca7e719abd56fedd10')
+      .then(response => response.json())
+      .then(data => {
+        this.setState({
+          bulletinMessages: JSON.parse(data.files['bulletin.json'].content).bulletinMessages
+        })
+      })
+      .catch(error => {
+        this.addMessage({
+          text: `取得資料時發生錯誤（${error}）`
+        })
+      })
   }
 
   scrollToLastMessageElement() {
@@ -80,7 +101,7 @@ class Main extends React.Component {
         >
           {children}
         </div>
-        {!isOverflow && <Bulletin />}
+        {!isOverflow && <Bulletin currentMessage={sample(this.state.bulletinMessages)} />}
       </main>
     );
   }

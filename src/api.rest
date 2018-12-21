@@ -1,0 +1,4 @@
+@endpoint = https://api.github.com
+@gist_id = ef19b4c3586c4aca7e719abd56fedd10
+
+GET {{endpoint}}/gists/{{gist_id}}
