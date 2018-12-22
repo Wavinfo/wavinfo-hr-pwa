@@ -1,14 +1,16 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import io from 'socket.io-client';
 import Navbar from './Navbar';
 import Main from './Main';
 import Footer from './Footer';
 import WhatToEat from './WhatToEat';
-import SaveToHomeScreen from './SaveToHomeScreen';
+// import SaveToHomeScreen from './SaveToHomeScreen';
 import Setting from '../pages/Setting';
 import Messages from '../pages/Messages';
 import { encrypt, decrypt, socketStatus } from '../utilities/helpers';
 import { socketConfig } from '../utilities/constants';
+import { addMessage } from './../actions';
 
 let socket = null;
 let deferredPrompt;
@@ -20,15 +22,15 @@ class App extends Component {
       socketStatusCode: socketStatus.connecting,
       username: '',
       password: '',
-      currentPath: 'messages',
-      messages: []
+      currentPath: 'messages'
+      // messages: []
     };
 
     this.onEmitPunch = this.onEmitPunch.bind(this);
     this.onLinkTo = this.onLinkTo.bind(this);
     this.onSaveAccount = this.onSaveAccount.bind(this);
     this.onOpenSocket = this.onOpenSocket.bind(this);
-    this.addMessage = this.addMessage.bind(this);
+    // this.addMessage = this.addMessage.bind(this);
     // this.onSaveAppToHomeScreen = this.onSaveAppToHomeScreen.bind(this);
   }
 
@@ -39,9 +41,8 @@ class App extends Component {
 
   async initApp() {
     await this.getLocalStorage();
-
     if (!this.isAccountExist) {
-      this.addMessage({
+      this.props.addMessage({
         text: '請先點選右上方的齒輪，設置您的帳號密碼'
       });
     }
@@ -59,7 +60,7 @@ class App extends Component {
       return;
     }
 
-    this.addMessage({
+    this.props.addMessage({
       text: '微寶正在與伺服器連線中...'
     });
 
@@ -70,13 +71,13 @@ class App extends Component {
         socketStatusCode: socketStatus.connected
       });
 
-      this.addMessage({
+      this.props.addMessage({
         text: '與伺服器連線成功'
       });
     });
 
     socket.on('punch', ({ complete, message }) => {
-      this.addMessage({ text: message });
+      this.props.addMessage({ text: message });
       this.setState({
         socketStatusCode: socketStatus.punching
       });
@@ -90,13 +91,13 @@ class App extends Component {
 
     // Connection Error Handler
     socket.on('connect_error', () => {
-      this.addMessage({
+      this.props.addMessage({
         text: '微寶無法與伺服器連線，請確認您處於內網狀態'
       });
     });
 
     socket.on('reconnecting', reconnectTimes => {
-      this.addMessage({
+      this.props.addMessage({
         text: `微寶第 ${reconnectTimes + 1} 次嘗試與伺服器連線...`
       });
 
@@ -107,7 +108,7 @@ class App extends Component {
           socketStatusCode: socketStatus.disconnected
         });
 
-        this.addMessage({
+        this.props.addMessage({
           text: '還是無法與伺服器連線，微寶放棄了...'
         });
       }
@@ -130,13 +131,13 @@ class App extends Component {
   onEmitPunch(action) {
     switch (action) {
       case 'in':
-        this.addMessage({
+        this.props.addMessage({
           speaker: 'user',
           text: '打卡上班'
         });
         break;
       case 'out':
-        this.addMessage({
+        this.props.addMessage({
           speaker: 'user',
           text: '打卡下班'
         });
@@ -167,7 +168,7 @@ class App extends Component {
       () => {
         this.onLinkTo('messages');
         this.updateLocalStorage();
-        this.addMessage({
+        this.props.addMessage({
           text: '帳號密碼儲存成功'
         });
       }
@@ -203,20 +204,20 @@ class App extends Component {
     );
   }
 
-  addMessage({ speaker = 'wavbo', text }) {
-    this.setState(prevState => {
-      return {
-        messages: [
-          ...prevState.messages,
-          {
-            id: prevState.messages.length + 1,
-            speaker,
-            text
-          }
-        ]
-      };
-    });
-  }
+  // addMessage({ speaker = 'wavbo', text }) {
+  //   this.setState(prevState => {
+  //     return {
+  //       messages: [
+  //         ...prevState.messages,
+  //         {
+  //           id: prevState.messages.length + 1,
+  //           speaker,
+  //           text
+  //         }
+  //       ]
+  //     };
+  //   });
+  // }
 
   savePWAInstallPrompt() {
     window.addEventListener('beforeinstallprompt', function(e) {
@@ -280,9 +281,7 @@ class App extends Component {
           socketStatusCode={socketStatusCode}
           onOpenSocket={this.onOpenSocket}
         />
-        {
-          <WhatToEat addMessage={this.addMessage}/>
-        }
+        {<WhatToEat addMessage={this.addMessage} />}
 
         {
           // Only Works on Service Worker
@@ -297,4 +296,19 @@ class App extends Component {
   }
 }
 
-export default App;
+const mapStateToProps = state => {
+  return {
+    messages: state.messages
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    addMessage: message => dispatch(addMessage(message))
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(App);

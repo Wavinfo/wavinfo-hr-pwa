@@ -4,12 +4,14 @@
   "private": true,
   "dependencies": {
     "crypto-js": "^3.1.9-1",
-    "materialize-css": "^1.0.0-rc.2",
-    "node-sass": "^4.9.4",
-    "react": "^16.6.0",
-    "react-dom": "^16.6.0",
+    "materialize-css": "^1.0.0",
+    "node-sass": "^4.11.0",
+    "react": "^16.7.0",
+    "react-dom": "^16.7.0",
+    "react-redux": "^6.0.0",
     "react-scripts": "2.1.1",
-    "socket.io-client": "^2.1.1"
+    "redux": "^4.0.1",
+    "socket.io-client": "^2.2.0"
   },
   "scripts": {
     "start": "react-scripts start",

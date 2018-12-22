@@ -1,4 +1,6 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import { addMessage } from './../actions'
 import { socketStatus } from './../utilities/helpers';
 import wavbo from './../images/wavbo.png';
 
@@ -46,4 +48,16 @@ const Messages = ({ messages, socketStatusCode }) => (
   </div>
 );
 
-export default Messages;
+const mapStateToProps = state => {
+  return {
+    messages: state.messages
+  }
+}
+
+const mapDispatchToProps = dispatch => {
+  return {
+    addMessage: message => dispatch(addMessage(message))
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Messages);
