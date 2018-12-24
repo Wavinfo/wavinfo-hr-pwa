@@ -1,49 +1,26 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import Bulletin from './Bulletin';
-import { sample } from './../utilities/helpers';
 
 let isOverflow;
 
 class Main extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      bulletinMessages: []
-    }
-  }
-
   componentDidMount() {
     this.mainElement = document.querySelector('[data-target="main"]');
     this.messagesElement = document.querySelector('[data-target="messages"]');
-    this.fetchBulletinMessages();
   }
 
   componentDidUpdate() {
     // Messages Component 的捲軸會移到最後一則訊息，
     // 其他的 Component 都是捲軸都是移到最頂端
 
-    isOverflow =
-      this.messagesElement.offsetHeight > this.mainElementInnerHeight;
+    isOverflow = this.messagesElement.offsetHeight > this.mainElementInnerHeight;
 
     if (this.props.currentPath === 'messages' && isOverflow) {
       this.scrollToLastMessageElement();
     } else {
       this.mainElement.scroll(0, 0);
     }
-  }
-
-  fetchBulletinMessages() {
-    return fetch('https://api.github.com/gists/ef19b4c3586c4aca7e719abd56fedd10')
-      .then(response => response.json())
-      .then(data => {
-        this.setState({
-          bulletinMessages: JSON.parse(data.files['messages.json'].content).bulletinMessages
-        })
-      })
-      .catch(error => {
-        console.log(`取得資料時發生錯誤（${error}）`)
-      })
   }
 
   scrollToLastMessageElement() {
@@ -99,10 +76,16 @@ class Main extends React.Component {
         >
           {children}
         </div>
-        {!isOverflow && <Bulletin currentMessage={sample(this.state.bulletinMessages)} />}
+        {!isOverflow && <Bulletin />}
       </main>
     );
   }
 }
 
-export default Main;
+const mapStateToProps = state => {
+  return {
+    currentPath: state.currentPath
+  };
+};
+
+export default connect(mapStateToProps)(Main);

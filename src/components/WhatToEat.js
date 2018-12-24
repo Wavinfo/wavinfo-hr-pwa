@@ -1,18 +1,14 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { sample } from './../utilities/helpers';
+import { addMessage } from './../actions';
 
 class WhatToEat extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      restaurants: []
-    }
     this.handleClick = this.handleClick.bind(this);
-  }
-
-  componentDidMount() {
-    this.fetchRestaurants();
+    this.timer = this.timer.bind(this);
   }
 
   handleClick(e) {
@@ -20,38 +16,31 @@ class WhatToEat extends React.Component {
     this.props.addMessage({
       speaker: 'user',
       text: '微寶，今天吃啥？'
-    })
+    });
 
-    this.fetchRestaurants()
-      .then(() => {
-        this.props.addMessage({
-          text: sample(this.state.restaurants)
-        })
-      })
+    this.timer(() => {
+      this.props.addMessage({
+        text: sample(this.props.restaurants)
+      });
+    }, 500)
   }
 
-  fetchRestaurants() {
-    return fetch('https://api.github.com/gists/ef19b4c3586c4aca7e719abd56fedd10')
-      .then(response => response.json())
-      .then(data => {
-        this.setState({
-          restaurants: JSON.parse(data.files['messages.json'].content).restaurants
-        })
-      })
-      .catch(error => {
-        console.log(`取得資料時發生錯誤（${error}）`)
-      })
+  timer(fn, timeout) {
+    setTimeout(() => {
+      fn()
+    }, timeout);
   }
 
   render() {
     return (
       <a
+        href="#"
         className="btn-floating btn-large waves-effect waves-light d-flex align-items-center z-depth-3"
         style={{
           position: 'fixed',
           right: 15,
           bottom: 65,
-          backgroundColor: 'rgb(130, 210, 210)'
+          backgroundColor: '#66c5c0'
         }}
         onClick={this.handleClick}
       >
@@ -61,4 +50,19 @@ class WhatToEat extends React.Component {
   }
 }
 
-export default WhatToEat;
+const mapStateToProps = state => {
+  return {
+    restaurants: state.restaurants
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    addMessage: message => dispatch(addMessage(message))
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(WhatToEat);

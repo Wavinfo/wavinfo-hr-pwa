@@ -1,4 +1,7 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import { updateSetting, linkTo } from '../actions';
+import { encrypt, decrypt } from './../utilities/helpers';
 
 class Setting extends React.Component {
   constructor(props) {
@@ -6,20 +9,22 @@ class Setting extends React.Component {
     this.usernameRef = React.createRef();
     this.passwordRef = React.createRef();
 
-    this.onClick = this.onClick.bind(this);
+    this.handleSaveButtonClick = this.handleSaveButtonClick.bind(this);
   }
 
-  onClick(e) {
+  handleSaveButtonClick(e) {
     e.preventDefault();
 
-    this.props.onSaveAccount({
+    this.props.updateSetting({
       username: this.usernameRef.current.value,
-      password: this.passwordRef.current.value
+      password: encrypt(this.passwordRef.current.value)
     });
+
+    this.props.linkTo('messages');
   }
 
   render() {
-    const { username, password } = this.props;
+    const { username, password } = this.props.settings;
     return (
       <div className="col">
         <form>
@@ -48,7 +53,7 @@ class Setting extends React.Component {
           <button
             className="btn waves-effect waves-light right"
             type="button"
-            onClick={this.onClick}
+            onClick={this.handleSaveButtonClick}
           >
             儲存
           </button>
@@ -58,4 +63,23 @@ class Setting extends React.Component {
   }
 }
 
-export default Setting;
+const mapStateToProps = state => {
+  return {
+    settings: {
+      ...state.settings,
+      password: state.settings.password && decrypt(state.settings.password)
+    }
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    updateSetting: account => dispatch(updateSetting(account)),
+    linkTo: page => dispatch(linkTo(page))
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Setting);

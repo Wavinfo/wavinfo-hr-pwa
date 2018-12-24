@@ -5,42 +5,32 @@ import Navbar from './Navbar';
 import Main from './Main';
 import Footer from './Footer';
 import WhatToEat from './WhatToEat';
-// import SaveToHomeScreen from './SaveToHomeScreen';
 import Setting from '../pages/Setting';
 import Messages from '../pages/Messages';
-import { encrypt, decrypt, socketStatus } from '../utilities/helpers';
-import { socketConfig } from '../utilities/constants';
-import { addMessage } from './../actions';
+import { socketStatus, decrypt } from '../utilities/helpers';
+import { SOCKET_CONFIG } from '../utilities/constants';
+import { addMessage, getLocalStorageAsync, fetchGistAsync } from './../actions';
 
 let socket = null;
-let deferredPrompt;
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      socketStatusCode: socketStatus.connecting,
-      username: '',
-      password: '',
-      currentPath: 'messages'
-      // messages: []
+      socketStatusCode: socketStatus.connecting
     };
 
     this.onEmitPunch = this.onEmitPunch.bind(this);
-    this.onLinkTo = this.onLinkTo.bind(this);
-    this.onSaveAccount = this.onSaveAccount.bind(this);
     this.onOpenSocket = this.onOpenSocket.bind(this);
-    // this.addMessage = this.addMessage.bind(this);
-    // this.onSaveAppToHomeScreen = this.onSaveAppToHomeScreen.bind(this);
   }
 
   componentDidMount() {
-    this.savePWAInstallPrompt();
     this.initApp();
+    this.props.fetchGistAsync();
   }
 
   async initApp() {
-    await this.getLocalStorage();
+    await this.props.getLocalStorageAsync();
     if (!this.isAccountExist) {
       this.props.addMessage({
         text: '請先點選右上方的齒輪，設置您的帳號密碼'
@@ -64,7 +54,7 @@ class App extends Component {
       text: '微寶正在與伺服器連線中...'
     });
 
-    socket = io(socketConfig.url);
+    socket = io(SOCKET_CONFIG.url);
 
     socket.on('connect', () => {
       this.setState({
@@ -101,7 +91,7 @@ class App extends Component {
         text: `微寶第 ${reconnectTimes + 1} 次嘗試與伺服器連線...`
       });
 
-      if (reconnectTimes >= socketConfig.reconnectAttemptTimes) {
+      if (reconnectTimes >= SOCKET_CONFIG.reconnectAttemptTimes) {
         socket.close();
 
         this.setState({
@@ -124,7 +114,7 @@ class App extends Component {
   }
 
   get isAccountExist() {
-    const { username, password } = this.state;
+    const { username, password } = this.props;
     return username && password ? true : false;
   }
 
@@ -147,134 +137,26 @@ class App extends Component {
     }
 
     socket.emit('punch', {
-      username: this.state.username,
-      password: this.state.password,
+      username: this.props.username,
+      password: this.props.password && decrypt( this.props.password),
       action
     });
   }
 
-  onLinkTo(path) {
-    this.setState({
-      currentPath: path
-    });
-  }
-
-  onSaveAccount({ username, password }) {
-    this.setState(
-      {
-        username,
-        password
-      },
-      () => {
-        this.onLinkTo('messages');
-        this.updateLocalStorage();
-        this.props.addMessage({
-          text: '帳號密碼儲存成功'
-        });
-      }
-    );
-  }
-
-  getLocalStorage() {
-    return new Promise(resolve => {
-      const account = window.localStorage.getItem('account');
-      if (!account) {
-        resolve(null);
-        return;
-      }
-
-      const { username, password } = JSON.parse(account);
-
-      this.setState({
-        username,
-        password: decrypt(password)
-      });
-      resolve('setState');
-    });
-  }
-
-  updateLocalStorage() {
-    const { username, password } = this.state;
-    window.localStorage.setItem(
-      'account',
-      JSON.stringify({
-        username,
-        password: encrypt(password)
-      })
-    );
-  }
-
-  // addMessage({ speaker = 'wavbo', text }) {
-  //   this.setState(prevState => {
-  //     return {
-  //       messages: [
-  //         ...prevState.messages,
-  //         {
-  //           id: prevState.messages.length + 1,
-  //           speaker,
-  //           text
-  //         }
-  //       ]
-  //     };
-  //   });
-  // }
-
-  savePWAInstallPrompt() {
-    window.addEventListener('beforeinstallprompt', function(e) {
-      console.log('beforeinstallprompt Event fired');
-      e.preventDefault();
-
-      // Stash the event so it can be triggered later.
-      deferredPrompt = e;
-
-      return false;
-    });
-  }
-
-  onSaveAppToHomeScreen() {
-    if (deferredPrompt !== undefined) {
-      // The user has had a positive interaction with our app and Chrome
-      // has tried to prompt previously, so let's show the prompt.
-      deferredPrompt.prompt();
-
-      // 看看使用者針對這個 prompt 做了什麼回應
-      deferredPrompt.userChoice.then(function(choiceResult) {
-        console.log(choiceResult.outcome);
-
-        if (choiceResult.outcome === 'dismissed') {
-          console.log('User cancelled home screen install');
-        } else {
-          console.log('User added to home screen');
-        }
-
-        // We no longer need the prompt.  Clear it up.
-        deferredPrompt = null;
-      });
-    }
-  }
-
-  get isInstallPromptSaved() {
-    return deferredPrompt;
-  }
-
   render() {
-    const { currentPath, username, password, socketStatusCode } = this.state;
+    const { socketStatusCode } = this.state;
+    const { username, password, messages } = this.props;
 
     return (
       <div className="App">
-        <Navbar onLinkTo={this.onLinkTo} currentPath={currentPath} />
-        <Main currentPath={currentPath}>
+        <Navbar />
+        <Main>
           <Messages
             key="messages"
-            messages={this.state.messages}
+            messages={messages}
             socketStatusCode={socketStatusCode}
           />
-          <Setting
-            key="setting"
-            username={username}
-            password={password}
-            onSaveAccount={this.onSaveAccount}
-          />
+          <Setting key="setting" username={username} password={password} />
         </Main>
         <Footer
           onEmitPunch={this.onEmitPunch}
@@ -282,15 +164,6 @@ class App extends Component {
           onOpenSocket={this.onOpenSocket}
         />
         {<WhatToEat addMessage={this.addMessage} />}
-
-        {
-          // Only Works on Service Worker
-          /* {this.isInstallPromptSaved && (
-          <SaveToHomeScreen
-            onSaveAppToHomeScreen={this.onSaveAppToHomeScreen}
-          />
-          )} */
-        }
       </div>
     );
   }
@@ -298,13 +171,17 @@ class App extends Component {
 
 const mapStateToProps = state => {
   return {
-    messages: state.messages
+    messages: state.messages,
+    username: state.settings.username,
+    password: state.settings.password
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
-    addMessage: message => dispatch(addMessage(message))
+    addMessage: message => dispatch(addMessage(message)),
+    getLocalStorageAsync: () => dispatch(getLocalStorageAsync()),
+    fetchGistAsync: () => dispatch(fetchGistAsync())
   };
 };
 

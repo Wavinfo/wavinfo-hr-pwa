@@ -5,7 +5,11 @@ const messages = (state = [], action) => {
     case ADD_MESSAGE:
       return [
         ...state,
-        action.payload
+        {
+          id: state.length + 1,
+          speaker: action.payload.speaker,
+          text: action.payload.text,
+        }
       ]
     default:
       return state;

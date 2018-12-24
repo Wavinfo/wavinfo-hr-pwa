@@ -1,6 +1,8 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import { linkTo } from './../actions';
 
-const Navbar = ({ onLinkTo, currentPath }) => {
+const Navbar = ({ linkTo, currentPath }) => {
   return (
     <div className="block-navbar">
       <nav>
@@ -13,7 +15,7 @@ const Navbar = ({ onLinkTo, currentPath }) => {
           }}
           onClick={e => {
             e.preventDefault();
-            onLinkTo('messages');
+            linkTo('messages');
           }}
         >
           <i className="icon icon-chevron-left" />
@@ -30,14 +32,14 @@ const Navbar = ({ onLinkTo, currentPath }) => {
 
         <a
           href="#"
-          className="d-flex align-items-center right h-100"
+          className="d-soft-flex align-items-center right h-100"
           style={{
             marginRight: '1rem',
             display: currentPath === 'setting' ? 'none' : 'flex'
           }}
           onClick={e => {
             e.preventDefault();
-            onLinkTo('setting');
+            linkTo('setting');
           }}
         >
           <i className="icon icon-setting" />
@@ -47,4 +49,19 @@ const Navbar = ({ onLinkTo, currentPath }) => {
   );
 };
 
-export default Navbar;
+const mapStateToProps = state => {
+  return {
+    currentPath: state.currentPath
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    linkTo: path => dispatch(linkTo(path))
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Navbar);
