@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import Bulletin from './Bulletin';
+import wavboRipSVG from './../images/wavbo-rip.svg'
 
 let isOverflow;
 
@@ -64,9 +65,16 @@ class Main extends React.Component {
   }
 
   render() {
-    const { currentPath, children } = this.props;
+    const { currentPath, children, isOver } = this.props;
+
     return (
-      <main className="block-main" data-target="main">
+      <main className="block-main" data-target="main"
+        style={ isOver ? {
+          background: 'center center no-repeat',
+          backgroundSize: '70%',
+          backgroundImage: `url(${wavboRipSVG})`,
+        } : null}
+      >
         <div
           className="container h-100"
           style={{
@@ -76,7 +84,7 @@ class Main extends React.Component {
         >
           {children}
         </div>
-        {!isOverflow && <Bulletin />}
+        {!isOver && !isOverflow && <Bulletin />}
       </main>
     );
   }

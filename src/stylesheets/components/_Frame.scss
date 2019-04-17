@@ -1,0 +1,16 @@
+.frame {
+  position: absolute;
+  right: 0px;
+  left: 0px;
+  top: 0;
+  border: 6px solid #d7d7d7;
+  padding-top: 10px;
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
+
+  .frame-img {
+    width: 100%;
+    display: block;
+  }
+}

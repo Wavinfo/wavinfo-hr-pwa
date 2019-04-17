@@ -9,4 +9,4 @@ In the project directory, you can run:
 
 ## Issues
 
-- [WIP] In iOS, it seems that the PWA can not invoke `componentDidMount` or `pageVisibilityChange`.
+- In iOS, it seems that the PWA can not invoke `componentDidMount`

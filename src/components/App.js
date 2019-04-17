@@ -10,14 +10,18 @@ import Messages from '../pages/Messages';
 import { socketStatus, decrypt } from '../utilities/helpers';
 import { SOCKET_CONFIG } from '../utilities/constants';
 import { addMessage, resetMessage, getLocalStorageAsync, fetchGistAsync } from './../actions';
+import Frame from './../components/Frame';
 
 let socket = null;
+
+const startCountDownTime = 1555493452577;
+const timeUpAt = 1556616600000;
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      socketStatusCode: socketStatus.connecting
+      socketStatusCode: socketStatus.connecting,
     };
 
     /* static variables */
@@ -180,11 +184,14 @@ class App extends Component {
   render() {
     const { socketStatusCode } = this.state;
     const { username, password, messages } = this.props;
+    const currentTime = new Date().getTime();
+    const isOver = currentTime > timeUpAt;
+    const grayScale = ((currentTime - startCountDownTime) / (timeUpAt - startCountDownTime)).toFixed(2);
 
     return (
-      <div className="App">
-        <Navbar />
-        <Main>
+      <div className="App" style={{ filter: `grayScale(${ grayScale })`}}>
+        { isOver ? <Frame /> : <Navbar /> }
+        <Main isOver={isOver}>
           <Messages
             key="messages"
             messages={messages}
@@ -197,7 +204,7 @@ class App extends Component {
           socketStatusCode={socketStatusCode}
           onOpenSocket={this.onOpenSocket}
         />
-        {<WhatToEat addMessage={this.addMessage} />}
+        {!isOver && <WhatToEat addMessage={this.addMessage} />}
       </div>
     );
   }
