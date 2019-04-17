@@ -9,7 +9,7 @@ import Setting from '../pages/Setting';
 import Messages from '../pages/Messages';
 import { socketStatus, decrypt } from '../utilities/helpers';
 import { SOCKET_CONFIG } from '../utilities/constants';
-import { addMessage, getLocalStorageAsync, fetchGistAsync } from './../actions';
+import { addMessage, resetMessage, getLocalStorageAsync, fetchGistAsync } from './../actions';
 
 let socket = null;
 
@@ -20,8 +20,13 @@ class App extends Component {
       socketStatusCode: socketStatus.connecting
     };
 
+    /* static variables */
+    this.visibilityChange = '';
+
     this.onEmitPunch = this.onEmitPunch.bind(this);
     this.onOpenSocket = this.onOpenSocket.bind(this);
+    this.registerPageVisibilityChange = this.registerPageVisibilityChange.bind(this);
+    this.handlePageVisibilityChange = this.handlePageVisibilityChange.bind(this);
   }
 
   componentDidMount() {
@@ -29,7 +34,12 @@ class App extends Component {
     this.props.fetchGistAsync();
   }
 
+  componentWillUnmount() {
+    document.removeEventListener(this.visibilityChange, this.handlePageVisibilityChange, false);
+  }
+
   async initApp() {
+    this.props.resetMessage();
     await this.props.getLocalStorageAsync();
     if (!this.isAccountExist) {
       this.props.addMessage({
@@ -42,6 +52,7 @@ class App extends Component {
     });
 
     this.registerSocket();
+    this.registerPageVisibilityChange();
   }
 
   registerSocket() {
@@ -113,6 +124,29 @@ class App extends Component {
     });
   }
 
+  registerPageVisibilityChange() {
+    // Set the name of the hidden property and the change event for visibility
+    // check MDN for more details, https://goo.gl/2LMnJo
+    if (typeof document.hidden !== 'undefined') {
+      // Opera 12.10 and Firefox 18 and later support
+      this.visibilityChange = 'visibilitychange';
+    } else if (typeof document.msHidden !== 'undefined') {
+      this.visibilityChange = 'msvisibilitychange';
+    } else if (typeof document.webkitHidden !== 'undefined') {
+      this.visibilityChange = 'webkitvisibilitychange';
+    }
+
+    if (this.visibilityChange !== undefined) {
+      document.addEventListener(this.visibilityChange, this.handlePageVisibilityChange, false);
+    }
+  }
+
+  handlePageVisibilityChange() {
+    if (document.hidden) {
+      this.props.resetMessage();
+    }
+  }
+
   get isAccountExist() {
     const { username, password } = this.props;
     return username && password ? true : false;
@@ -180,6 +214,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
   return {
     addMessage: message => dispatch(addMessage(message)),
+    resetMessage: () => dispatch(resetMessage()),
     getLocalStorageAsync: () => dispatch(getLocalStorageAsync()),
     fetchGistAsync: () => dispatch(fetchGistAsync())
   };

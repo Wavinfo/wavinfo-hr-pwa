@@ -12,6 +12,13 @@ export const addMessage = ({ speaker = 'wavbo', text } = {}) => {
   };
 };
 
+export const RESET_MESSAGE = 'RESET_MESSAGE';
+export const resetMessage = () => {
+  return {
+    type: RESET_MESSAGE,
+  };
+};
+
 /**
  * Settings Actions
  */

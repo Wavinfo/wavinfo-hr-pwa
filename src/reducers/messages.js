@@ -1,4 +1,4 @@
-import { ADD_MESSAGE } from './../actions'
+import { ADD_MESSAGE, RESET_MESSAGE } from './../actions'
 
 const messages = (state = [], action) => {
   switch (action.type) {
@@ -11,6 +11,8 @@ const messages = (state = [], action) => {
           text: action.payload.text,
         }
       ]
+    case RESET_MESSAGE:
+      return [];
     default:
       return state;
   }
